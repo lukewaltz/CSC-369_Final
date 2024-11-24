@@ -10,12 +10,12 @@ Parsing
 - features: Remaining columns converted to Double.
 
 Normalizing
-- \[ X_{normalized} = \frac{X - X_{min}}{X_{max} - X_{min}} \]
+\[ X_{normalized} = \frac{X - X_{min}}{X_{max} - X_{min}} \]
 
-- \( X \): The original value of the feature.
-- \( X_{min} \): The minimum value of the feature in the dataset.
-- \( X_{max} \): The maximum value of the feature in the dataset.
-- \( X_{normalized} \): The normalized value of the feature, scaled to the range [0, 1].
+\( X \): The original value of the feature.
+\( X_{min} \): The minimum value of the feature in the dataset.
+\( X_{max} \): The maximum value of the feature in the dataset.
+\( X_{normalized} \): The normalized value of the feature, scaled to the range [0, 1].
 
 - This ensures all feature values are scaled proportionally and lie within the range [0, 1].
 
