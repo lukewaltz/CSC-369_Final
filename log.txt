@@ -1,0 +1,17 @@
+Summary of team members contributions:
+
+Luke Waltz:
+Did research on KNN.
+Imported and normalized data. 
+Used min-max scaling for normalization.
+Contributed to Slides and Report.
+(4 hours total)
+
+Luca Perri:
+
+
+Aayush Joshi:
+
+
+Colin McDonald:
+
