@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from collections import Counter
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score, precision_score, recall_score, f1_score
 
 # Load the uploaded CSV file to examine its contents
@@ -40,7 +41,40 @@ def classification_metrics_plot():
     plt.xlabel("Index")
     plt.ylabel("Class")
     plt.legend()
-    plt.savefig('scatter_plot.png')  # Save the plot as a PNG file
+    plt.savefig('scatter_plot.png')
+
+    # Generate classification report
+    report = classification_report(actual, predicted, target_names=["Class 0", "Class 1"])
+    
+    # Save the classification report to a file
+    with open("classification_report.txt", "w") as file:
+        file.write("Classification Report:\n")
+        file.write(report)
+    
+    # Count occurrences of each class in Actual and Predicted
+    actual_counts = Counter(actual)
+    predicted_counts = Counter(predicted)
+
+    # Prepare data for the bar chart
+    labels = ['Class 0 (No)', 'Class 1 (Yes)']
+    actual_values = [actual_counts[0], actual_counts[1]]
+    predicted_values = [predicted_counts[0], predicted_counts[1]]
+
+    x = range(len(labels))  # Positions for the bars
+
+    # Create a bar chart
+    plt.figure(figsize=(10, 6))
+    plt.bar(x, actual_values, width=0.4, label='Actual', color='blue', alpha=0.6, align='center')
+    plt.bar([pos + 0.4 for pos in x], predicted_values, width=0.4, label='Predicted', color='red', alpha=0.6, align='center')
+
+    # Customize the chart
+    plt.xticks([pos + 0.2 for pos in x], labels)
+    plt.title("Actual vs Predicted Counts")
+    plt.xlabel("Class")
+    plt.ylabel("Count")
+    plt.legend()
+    plt.savefig('bar_chart_actual_vs_predicted.png')
+
 
 # Calculate evaluation metrics
 def evaluation_metrics():
