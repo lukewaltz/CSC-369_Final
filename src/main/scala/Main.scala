@@ -5,8 +5,13 @@ import org.apache.spark.rdd._
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 import scala.collection._
+import java.io._
 
 object Main {
+
+  // Create empty files to record model performance
+  logToFile("k_accuracy.csv", "k,Accuracy", false)
+  logToFile("predictions.csv", "ID,Actual,Prediction", false)
 
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.OFF)
@@ -19,12 +24,16 @@ object Main {
     val Array(trainingData, validationData, testData) = data.randomSplit(Array(0.6, 0.2, 0.2), seed = 42)
 
     // Tune k using the validation set
-    val kValues = Seq(3, 5, 7, 9)
+    val kStart = 3      // Start value of k
+    val kEnd = 30       // End value of k
+    val kStep = 2       // Step size for k values
+    val kValues = kStart to kEnd by kStep
+
     val bestK = tuneK(trainingData, validationData, kValues)
     println(s"Best k value: $bestK")
 
     // Evaluate the model on the test set
-    val testAccuracy = evaluateModel(trainingData, testData, bestK)
+    val testAccuracy = evaluateModel(trainingData, testData, bestK, true)
     println(f"Test Accuracy: $testAccuracy%.2f%%")
   }
 
@@ -95,19 +104,26 @@ object Main {
 
   private def tuneK(trainingData: RDD[(String, Int, Array[Double])], validationData: RDD[(String, Int, Array[Double])], kValues: Seq[Int]): Int = {
     val accuracyPerK = kValues.map { k =>
-      val accuracy = evaluateModel(trainingData, validationData, k)
+      val accuracy = evaluateModel(trainingData, validationData, k, false)
+      logToFile("k_accuracy.csv", s"$k,$accuracy", true)
       (k, accuracy)
     }
     val bestK = accuracyPerK.maxBy(_._2)._1
     bestK
   }
 
-  private def evaluateModel(trainingData: RDD[(String, Int, Array[Double])], testData: RDD[(String, Int, Array[Double])], k: Int): Double = {
+  private def evaluateModel(trainingData: RDD[(String, Int, Array[Double])], testData: RDD[(String, Int, Array[Double])], k: Int, mode: Boolean): Double = {
     // Predict labels for the test data
     val predictions = classifyKNN(trainingData, testData, k)
 
     // Join predictions with actual labels
     val joinedData = testData.map { case (id, actual, _) => (id, actual) }.join(predictions)
+
+    if (mode) {
+      joinedData.collect().foreach({
+        case (id, (actual, predicted)) => logToFile("predictions.csv", s"$id,$actual,$predicted", true)
+      })
+    }
 
     // Compute accuracy
     val correctPredictions = joinedData.filter { case (_, (actual, predicted)) => actual == predicted }.count()
@@ -115,5 +131,15 @@ object Main {
 
     val accuracy = (correctPredictions.toDouble / totalPredictions) * 100
     accuracy
+  }
+
+  def logToFile(filePath: String, data: String, mode: Boolean): Unit = {
+    val writer = new FileWriter(filePath, mode) // Append mode
+    try {
+//      println(data)
+      writer.write(data + "\n")
+    } finally {
+      writer.close()
+    }
   }
 }

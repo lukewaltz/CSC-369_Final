@@ -11,7 +11,11 @@ Luca Perri:
 
 
 Aayush Joshi:
-
+Research on KNN
+Written code to document model findings
+Code to compare model performance with different values of k
+Code to calculate evaluation metrics and visualizations
+(3 hours total)
 
 Colin McDonald:
 
