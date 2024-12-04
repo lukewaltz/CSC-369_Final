@@ -8,10 +8,10 @@ Contributed to Slides and Report.
 (4 hours total)
 
 Luca Perri:
-
+11/25/2024 4 hours Wrote the KNN algorithm implementation in Scala using Spark.
 
 Aayush Joshi:
-
+12/1/2024 3 hours Generated the visualizations with python and matplotlib.
 
 Colin McDonald:
 11/22/2024 30 minutes Set up the skeleton of the GitHub repo.                            
